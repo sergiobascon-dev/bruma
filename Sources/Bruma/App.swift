@@ -20,6 +20,8 @@ final class BrumaApp: NSObject, NSApplicationDelegate {
     private var zeroSince = CACurrentMediaTime()
     private var permissionChecked = CACurrentMediaTime()
     private var permission = false
+    private var diagnosticFrames = 0
+    private var diagnosticVisible = false
     private(set) var angle: Double?
     private(set) var message = "Activa Bruma para seguir la tapa."
     var onStatus: (() -> Void)?
@@ -66,11 +68,15 @@ final class BrumaApp: NSObject, NSApplicationDelegate {
                 self.setEnabled(false)
                 return nil
             }
+            if pixels != nil { self.diagnosticFrames += 1 }
             return pixels
         }
         overlay?.renderer.didDraw = { [weak self] amount in
             guard let self, let overlay = self.overlay else { return }
-            if amount > 0.002, self.lastTarget > 0 { overlay.reveal() }
+            if amount > 0.002, self.lastTarget > 0 {
+                overlay.reveal()
+                self.diagnosticVisible = true
+            }
         }
         let workspace = NSWorkspace.shared.notificationCenter
         for name in [NSWorkspace.willSleepNotification, NSWorkspace.screensDidSleepNotification, NSWorkspace.sessionDidResignActiveNotification] {
@@ -84,6 +90,19 @@ final class BrumaApp: NSObject, NSApplicationDelegate {
         DistributedNotificationCenter.default().addObserver(self, selector: #selector(resume), name: NSNotification.Name("com.apple.screenIsUnlocked"), object: nil)
         registerShortcut()
         showSettings()
+        if CommandLine.arguments.contains("--desktop-check") {
+            // Explicit opt-in diagnostic. Prints only counters, never saves pixels.
+            demo()
+            DispatchQueue.main.asyncAfter(deadline: .now()+8) { [self] in
+                let cleared = overlay?.shown == false && !capture.running
+                let passed = diagnosticFrames > 0 && diagnosticVisible && cleared
+                print("Desktop check: frames=\(diagnosticFrames), overlay=\(diagnosticVisible), cleared=\(cleared)")
+                if !passed { print("Estado: \(message)") }
+                stopEffect()
+                fflush(stdout)
+                exit(passed ? 0 : 1)
+            }
+        }
     }
 
     private func makeMenu() {
@@ -102,6 +121,15 @@ final class BrumaApp: NSObject, NSApplicationDelegate {
             menu.addItem(item)
         }
         statusItem.menu = menu
+        let mainMenu = NSMenu()
+        let appItem = NSMenuItem()
+        let appMenu = NSMenu()
+        let quitItem = NSMenuItem(title: "Salir de Bruma", action: #selector(quit), keyEquivalent: "q")
+        quitItem.target = self
+        appMenu.addItem(quitItem)
+        appItem.submenu = appMenu
+        mainMenu.addItem(appItem)
+        NSApp.mainMenu = mainMenu
     }
 
     @objc func showSettings() {

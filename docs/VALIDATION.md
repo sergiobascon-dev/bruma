@@ -20,6 +20,9 @@
 - Ventana nativa abierta y revisada visualmente. Se ve el gradiente de nitidez correcto en el patrón, los controles y las instrucciones de permiso.
 - Al intentar la demo desde la app sin autorización, se mantuvo visible el escritorio normal y apareció la explicación de acceso requerido.
 - Revisión de código: sin llamadas de red, sin captura de audio y sin escritura de imágenes del escritorio. Solo el modo de comprobación sintética guarda PNG.
+- Prueba integrada `--desktop-check` desde el proceso anfitrión con acceso a la pantalla: **179 fotogramas recibidos**, capa presentada y retirada al terminar; captura detenida después de la demo. No se guardaron imágenes del escritorio.
+- GitHub Actions: compilación y tests aprobados en macOS 15 para la primera publicación del código.
+- La descarga pública se empaqueta con firma ad hoc en una carpeta temporal, sin metadatos de Finder. La copia local se firmó después con el certificado Apple Development ya disponible en el Mac, sin incluir esa identidad en la descarga pública.
 
 ## Pendiente de comprobación manual
 
@@ -30,6 +33,8 @@
 - Pruebas en modelos diferentes y medición sostenida de CPU, GPU, energía y latencia.
 
 La presencia de código para estos casos no se presenta como una prueba física realizada.
+
+La primera autorización de la app empaquetada quedó asociada a una firma anterior. La comprobación final se retiró de forma segura sin capturar fotogramas; se solicitó actualizar la entrada de Bruma en Ajustes de macOS. La app no se instaló en Aplicaciones: quedó en la carpeta del proyecto, junto con un ZIP distribuible.
 
 ## Reproducir
 

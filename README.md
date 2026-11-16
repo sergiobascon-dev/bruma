@@ -6,6 +6,8 @@ Bruma es una app nativa de macOS que desenfoca tu escritorio al mover la tapa de
 
 Swift · AppKit · ScreenCaptureKit · Metal · Sin dependencias externas.
 
+[Descargar Bruma 1.0.0 para Apple Silicon](https://github.com/sergiobascon-dev/bruma/releases/download/v1.0.0/Bruma-1.0.0-macOS-arm64.zip) · [Ver la versión y su SHA-256](https://github.com/sergiobascon-dev/bruma/releases/tag/v1.0.0)
+
 ![El mismo patrón abierto, parcialmente desenfocado y muy desenfocado](docs/progressive-blur.png)
 
 *Patrón generado: izquierda sin efecto, centro 35%, derecha 85%. Observa que las líneas de abajo se conservan mientras las de arriba se difuminan. No es una captura de un escritorio real.*
@@ -40,6 +42,8 @@ cd bruma
 ```
 
 El resultado es `build/Bruma.app`. Después puedes abrir esa misma app desde Finder sin recompilar, o arrastrarla a Aplicaciones. La compilación no instala servicios ni modifica tus ajustes de reposo.
+
+También se genera `build/Bruma-macOS.zip`, sin metadatos de Finder. Si usas una carpeta sincronizada con iCloud, mueve la app a Aplicaciones antes de conceder el permiso: el proveedor de archivos puede añadir metadatos a los paquetes de aplicaciones dentro de Documentos.
 
 Para firmar con un certificado propio:
 
@@ -95,11 +99,14 @@ Las pruebas `--render-check` sí escriben PNG, pero exclusivamente del patrón s
 ./scripts/check.sh
 ./build/Bruma.app/Contents/MacOS/Bruma --diagnose
 ./build/Bruma.app/Contents/MacOS/Bruma --render-check build/render-check
+./build/Bruma.app/Contents/MacOS/Bruma --desktop-check
 ```
 
 Los tests comprueban el sentido apertura/cierre, el despejado al detenerse, el ruido del sensor, movimientos lentos, datos inválidos y la pérdida de pantalla. La comprobación GPU valida que la imagen abierta sea idéntica al original, que arriba se pierda más detalle que abajo, que la intensidad cero funcione y que el resultado sea opaco.
 
 La CI compila la app y ejecuta los tests de política; las pruebas GPU deben ejecutarse en un Mac con GPU accesible.
+
+`--desktop-check` activa una demo real de seis segundos y sale a los ocho segundos, comprobando recepción de fotogramas, presentación de la capa y retirada final. Solo imprime contadores; requiere permiso de captura del proceso que lo ejecuta. No sustituye la comprobación de autorización al abrir la app desde Finder.
 
 | Archivo | Función |
 | --- | --- |
