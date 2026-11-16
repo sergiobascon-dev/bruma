@@ -21,12 +21,12 @@
 - Al intentar la demo desde la app sin autorización, se mantuvo visible el escritorio normal y apareció la explicación de acceso requerido.
 - Revisión de código: sin llamadas de red, sin captura de audio y sin escritura de imágenes del escritorio. Solo el modo de comprobación sintética guarda PNG.
 - Prueba integrada `--desktop-check` desde el proceso anfitrión con acceso a la pantalla: **179 fotogramas recibidos**, capa presentada y retirada al terminar; captura detenida después de la demo. No se guardaron imágenes del escritorio.
+- Prueba de la **app final empaquetada, abierta mediante Launch Services**, después de que el usuario autorizara su firma final en Ajustes: **181 fotogramas recibidos**, capa presentada y retirada correctamente al terminar (`overlay=true`, `cleared=true`). No se guardaron imágenes del escritorio.
 - GitHub Actions: compilación y tests aprobados en macOS 15 para la primera publicación del código.
 - La descarga pública se empaqueta con firma ad hoc en una carpeta temporal, sin metadatos de Finder. La copia local se firmó después con el certificado Apple Development ya disponible en el Mac, sin incluir esa identidad en la descarga pública.
 
 ## Pendiente de comprobación manual
 
-- Conceder Grabación de pantalla a la **app empaquetada** y ejecutar su demo con el escritorio real. El diagnóstico invocado desde Terminal puede heredar el permiso del proceso anfitrión; un resultado positivo allí no acredita el permiso de la app abierta con Finder.
 - Barrido físico completo de la tapa, en ambos sentidos, observando el resultado desde la posición normal de uso.
 - Bloqueo/desbloqueo, reposo/despertar y desconexión de monitores durante un efecto activo.
 - Atajo global y clics pasantes durante un efecto real.
@@ -34,7 +34,7 @@
 
 La presencia de código para estos casos no se presenta como una prueba física realizada.
 
-La primera autorización de la app empaquetada quedó asociada a una firma anterior. La comprobación final se retiró de forma segura sin capturar fotogramas; se solicitó actualizar la entrada de Bruma en Ajustes de macOS. La app no se instaló en Aplicaciones: quedó en la carpeta del proyecto, junto con un ZIP distribuible.
+La primera autorización de la app empaquetada quedó asociada a una firma anterior. Tras actualizar su entrada en Ajustes de macOS, la comprobación de la app final pasó correctamente. La app no se instaló en Aplicaciones: quedó en la carpeta del proyecto, junto con un ZIP distribuible.
 
 ## Reproducir
 
